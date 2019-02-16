@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+<!-- Style Sheets for Map, Body, HTML and Table is created below -->
+    <style>
+      #map {
+        height: 65%;
+        width: 35%;
+        margin: 2%;
+      }
+
+      html, body {
+        height: 100%;
+        margin: 1%;
+        padding: 0%;
+      }
+
+      .bg{
+          background-image: url({{ bg }});
+          height: 100%;
+          background-position: center;
+          background-size: cover;
+          background-repeat: no-repeat;
+          width: 100%;
+      }
+
+      table, th, td {
+          border: 1px solid black;
+      }
+    </style>
+  </head>
+
+  <body class="bg">
+<!-- The first div in HTML body will display the title of the project -->
+  <div align="center" style="width: 40%; position: relative; left: 470px; background-color: azure">
+      <p style="font-size: 30px; color: midnightblue; border: 1px solid; border-color: brown">Location based Weather & Traffic Web App</p>
+  </div>
+
+<!--The second div create an input box for the user to enter location and a submit button which sends POST request-->
+  <div style="position: relative; left: 150px; top: 10px">
+      <form action=" " method="post">
+          {% csrf_token %}
+          <div style="background-color: darksalmon; width: 120px; font-size: 18px">Enter a location:</div>
+          <input type="text" name="location" placeholder="Raleigh, NC" style="background-color: #D6E9FE; font-size: 15px">
+          <button type="submit" style="font-size: 15px; background-color: antiquewhite" >Submit</button>
+
+      </form>
+  </div>
+
+<!-- A flag has been used to display the weather data only when a user enters a location-->
+  {% if flag == 0 %}
+      <!-- A table is created to display the location and weather information of the entered location -->
+  <table style="position: absolute; left: 600px; top: 90px; background-color: bisque">
+    <tr>
+        <th>Location</th>
+        <th>Temperature</th>
+        <th>Pressure</th>
+        <th>Wind Speed</th>
+    </tr>
+    <tr>
+        <td>{{ temp.location }}</td>
+        <td>{{ temp.currently.temperature }} F</td>
+        <td>{{ temp.currently.pressure }}</td>
+        <td>{{ temp.currently.windSpeed }} m/s</td>
+    </tr>
+  </table>
+
+    <!-- When a user enters location and submits it, the web-page will display two buttons for check daily/hourly forecast-->
+    <div align="center" style="position: absolute; left: 700px; top: 150px">
+      <form action="" method="get">
+          {% csrf_token %}
+          <div style="border: 4px midnightblue; font-size: 18px; background-color: antiquewhite; width: 380px">Click below to check Daily/Hourly Forecast</div>
+          <input type="submit" name="plot_button" value="Daily" style="font-size: 17px; background-color: antiquewhite"></input>
+          <input type="submit" name="plot_button" value="Hourly" style="font-size: 17px; background-color: antiquewhite"></input>
+      </form>
+  </div>
+  {% endif %}
+
+  <!-- The following script is used to display the visualization graph using Plotly -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <div style="position:absolute; left: 650px ;height: 500px; width: 500px; top: 210px">{{ url|safe }}</div>
+
+    <!-- The following JavaScript is used to display Google Map using the Google Maps API -->
+    <div id="map" align="center" style="position: relative; top: 25px"></div>
+    <script>
+      var map;
+      function initMap() {
+        var center = {lat: {{lat}}, lng: {{long}}}
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: {{lat}}, lng: {{long}}},
+          zoom: 12
+        });
+
+          {% for inc in traffic %}
+            var lat = {{ inc.lat }};
+            var lng = {{ inc.lng }};
+            var title = '{{ inc.shortDesc }}';
+            var marker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map, title:title});
+          {%  endfor %}
+
+      };
+      (function error(){
+          if ({{ flag }} == 1){
+              alert('Please enter a valid city and state')
+          }
+      })();
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ map_key }}&callback=initMap"
+    async defer></script>
+
+  <!-- The last div will add a Pandas Dataframe in the web page which displays the hourly/daily summary-->
+  <div style="position: absolute; left: 1170px; top: {{ top|safe }}; background-color: #D6E9FE">{{ df|safe }}</div>
+  </body>
+</html>
