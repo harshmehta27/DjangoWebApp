@@ -1,0 +1,40 @@
+(1) This project is built using Web Development Framework Django. 
+
+(2) This web app requires the following libraries (which are not built in packages):
+	- Django
+	- geopy
+	- pymongo
+	- requests
+	- json
+	- pandas
+
+(3) I have created a batch file named "install_libraries.bat" which will install all the above libraries
+
+(4) This app runs on localhost. To run this application:
+	- Open command prompt and change directory inside the "ISE 589 Project" where "manage.py" file is saved
+	- Execute the following code in command prompt
+
+		python manage.py migrate
+
+	- Then, run the following command to run the server,
+
+		python manage.py runserver
+
+	- Open localhost:8000
+
+(5) I have created another batch file named "Batch_File" which will execute the steps shown above.
+And on opening localhost:8000 the application will run.
+
+(6) The Python files are in the "events" folder and the "html" file is in the "templates" folder
+
+(7) Some of the python files were created by default when I created this project. The python files 
+in which I have written code are:
+	- background.py
+	- dataframe.py
+	- geocoder.py
+	- mongodb.py
+	- plots.py
+	- traffic.py
+	- views.py (This is the main file) 
+	- weather.py
+
